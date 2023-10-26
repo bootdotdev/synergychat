@@ -18,18 +18,19 @@ type apiConfig struct {
 }
 
 func main() {
-	// e.g. "https://gutendex.com"
+	// "https://gutendex.com/books"
 	baseURL := os.Getenv("CRAWLER_BASE_URL")
 	if baseURL == "" {
 		log.Fatal("No CRAWLER_BASE_URL found in environment")
 	}
-	// e.g. "love,hate"
+	// "love,hate"
 	keywordsString := os.Getenv("CRAWLER_KEYWORDS")
 	if keywordsString == "" {
 		log.Fatal("No CRAWLER_KEYWORDS found in environment")
 	}
 	keywords := strings.Split(keywordsString, ",")
 
+	// 5000
 	port := os.Getenv("CRAWLER_PORT")
 	if port == "" {
 		log.Fatal("No CRAWLER_PORT found in environment")
@@ -40,6 +41,8 @@ func main() {
 		baseURL:  baseURL,
 	}
 
+	// optional
+	// "~/.crawler"
 	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
 	if crawlerDBPath == "" {
 		apiCfg.db = &Memory{
