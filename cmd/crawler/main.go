@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"slices"
 	"strings"
 	"sync"
 
@@ -13,10 +12,9 @@ import (
 )
 
 type apiConfig struct {
-	matches   map[string]Match
-	matchesMu *sync.Mutex
-	keywords  []string
-	baseURL   string
+	keywords []string
+	baseURL  string
+	db       DB
 }
 
 func main() {
@@ -38,16 +36,31 @@ func main() {
 	}
 
 	apiCfg := apiConfig{
-		matches:   map[string]Match{},
-		matchesMu: &sync.Mutex{},
-		keywords:  keywords,
-		baseURL:   baseURL,
+		keywords: keywords,
+		baseURL:  baseURL,
 	}
+
+	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
+	if crawlerDBPath == "" {
+		apiCfg.db = &Memory{
+			mu:      &sync.Mutex{},
+			matches: map[string]Match{},
+		}
+	} else {
+		err := os.MkdirAll(crawlerDBPath, 0755)
+		if err != nil {
+			log.Fatal("Couldn't create directory in CRAWLER_DB_PATH")
+		}
+		apiCfg.db = Disk{
+			crawlerDBPath: crawlerDBPath,
+		}
+	}
+
 	go apiCfg.worker()
 
 	router := chi.NewRouter()
 	router.Get("/healthz", handlerReadiness)
-	router.Get("/matches", apiCfg.handlerGetMatches)
+	router.Get("/counts", apiCfg.handlerGetMatches)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
@@ -59,16 +72,11 @@ func main() {
 }
 
 func (cfg apiConfig) handlerGetMatches(w http.ResponseWriter, r *http.Request) {
-	cfg.matchesMu.Lock()
-	defer cfg.matchesMu.Unlock()
-
-	matchesSlice := []Match{}
-	for _, match := range cfg.matches {
-		matchesSlice = append(matchesSlice, match)
+	matchesSlice, err := cfg.db.getCounts()
+	if err != nil {
+		respondWithJSON(w, 500, map[string]string{"error": err.Error()})
+		return
 	}
-	slices.SortFunc(matchesSlice, func(a, b Match) int {
-		return a.Count - b.Count
-	})
 
 	respondWithJSON(w, 200, matchesSlice)
 }

@@ -42,26 +42,15 @@ func (cfg apiConfig) worker() {
 			count := checkBookForKeywords(book, cfg.keywords)
 			log.Printf("Found %v matches in %v", count, book.Title)
 			if count > 0 {
-				cfg.incrementMatch(book.Title, count)
+				err = cfg.db.saveCount(book.Title, count)
+				if err != nil {
+					log.Printf("Error saving count for %v: %v", book.Title, err)
+				}
 			}
 			time.Sleep(timeBetweenBooks)
 		}
 		nextURL = next
 	}
-}
-
-func (cfg apiConfig) incrementMatch(title string, count int) {
-	cfg.matchesMu.Lock()
-	defer cfg.matchesMu.Unlock()
-	if _, ok := cfg.matches[title]; !ok {
-		cfg.matches[title] = Match{
-			BookTitle: title,
-			Count:     0,
-		}
-	}
-	match := cfg.matches[title]
-	match.Count += count
-	cfg.matches[title] = match
 }
 
 func fetchBooks(nextURL string) ([]Book, string, error) {
