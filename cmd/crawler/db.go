@@ -4,28 +4,33 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"sync"
 	"unicode"
 )
 
+type Match struct {
+	Keyword   string
+	BookTitle string
+	Count     int
+}
+
 type DB interface {
-	getCounts() ([]Match, error)
-	saveCount(title string, count int) error
+	// keyword -> title -> count
+	getCounts() (map[string]map[string]Match, error)
+	saveCount(title, keyword string, count int) error
 }
 
 type Disk struct {
 	crawlerDBPath string
 }
 
-func (d Disk) getCounts() ([]Match, error) {
+func (d Disk) getCounts() (map[string]map[string]Match, error) {
 	entries, err := os.ReadDir(d.crawlerDBPath)
 	if err != nil {
 		return nil, err
 	}
-
-	matchesSlice := []Match{}
+	matches := map[string]map[string]Match{}
 	for _, entry := range entries {
 		dat, err := os.ReadFile(filepath.Join(d.crawlerDBPath, entry.Name()))
 		if err != nil {
@@ -36,15 +41,15 @@ func (d Disk) getCounts() ([]Match, error) {
 		if err != nil {
 			return nil, err
 		}
-		matchesSlice = append(matchesSlice, match)
+		if _, ok := matches[match.Keyword]; !ok {
+			matches[match.Keyword] = map[string]Match{}
+		}
+		matches[match.Keyword][match.BookTitle] = match
 	}
-	slices.SortFunc(matchesSlice, func(a, b Match) int {
-		return a.Count - b.Count
-	})
-	return matchesSlice, err
+	return matches, nil
 }
 
-func (d Disk) saveCount(title string, count int) error {
+func (d Disk) saveCount(keyword, title string, count int) error {
 	cleanedTitle := title
 	cleanedTitle = strings.ToLower(title)
 	cleanedTitle = removeSpaces(cleanedTitle)
@@ -52,12 +57,13 @@ func (d Disk) saveCount(title string, count int) error {
 	match := Match{
 		BookTitle: title,
 		Count:     count,
+		Keyword:   keyword,
 	}
 	dat, err := json.Marshal(match)
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(d.crawlerDBPath, cleanedTitle+".json"), dat, 0755)
+	return os.WriteFile(filepath.Join(d.crawlerDBPath, keyword+"."+cleanedTitle+".json"), dat, 0755)
 }
 
 func removePunctuation(s string) string {
@@ -81,24 +87,16 @@ func removeSpaces(str string) string {
 
 type Memory struct {
 	mu      *sync.Mutex
-	matches map[string]Match
+	matches map[string]map[string]Match
 }
 
-func (m *Memory) getCounts() ([]Match, error) {
+func (m *Memory) getCounts() (map[string]map[string]Match, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
-	matchesSlice := []Match{}
-	for _, match := range m.matches {
-		matchesSlice = append(matchesSlice, match)
-	}
-	slices.SortFunc(matchesSlice, func(a, b Match) int {
-		return a.Count - b.Count
-	})
-	return matchesSlice, nil
+	return deepCopy(m.matches), nil
 }
 
-func (m *Memory) saveCount(title string, count int) error {
+func (m *Memory) saveCount(keyword, title string, count int) error {
 	cleanedTitle := title
 	cleanedTitle = strings.ToLower(title)
 	cleanedTitle = removeSpaces(cleanedTitle)
@@ -106,9 +104,35 @@ func (m *Memory) saveCount(title string, count int) error {
 	match := Match{
 		BookTitle: title,
 		Count:     count,
+		Keyword:   keyword,
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.matches[cleanedTitle] = match
+	_, ok := m.matches[keyword]
+	if !ok {
+		m.matches[keyword] = map[string]Match{}
+	}
+	m.matches[keyword][cleanedTitle] = match
 	return nil
+}
+
+func deepCopy(m map[string]map[string]Match) map[string]map[string]Match {
+	result := map[string]map[string]Match{}
+	for k, v := range m {
+		result[k] = map[string]Match{}
+		for a, b := range v {
+			result[k][a] = b
+		}
+	}
+	return result
+}
+
+func matchesMapToSlice(m map[string]map[string]Match) []Match {
+	result := []Match{}
+	for _, v := range m {
+		for _, b := range v {
+			result = append(result, b)
+		}
+	}
+	return result
 }

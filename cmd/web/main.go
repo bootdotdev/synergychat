@@ -23,6 +23,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	// Setting the content type based on the file extension
 	if ext := http.DetectContentType(data); len(ext) > 0 {
 		w.Header().Set("Content-Type", ext)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET")
 	}
 
 	w.Write(data)

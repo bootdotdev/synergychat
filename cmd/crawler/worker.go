@@ -22,11 +22,6 @@ type Book struct {
 	DownloadCount int               `json:"download_count"`
 }
 
-type Match struct {
-	BookTitle string
-	Count     int
-}
-
 const timeBetweenBooks = time.Second
 
 func (cfg apiConfig) worker() {
@@ -39,10 +34,9 @@ func (cfg apiConfig) worker() {
 		}
 
 		for _, book := range books {
-			count := checkBookForKeywords(book, cfg.keywords)
-			log.Printf("Found %v matches in %v", count, book.Title)
-			if count > 0 {
-				err = cfg.db.saveCount(book.Title, count)
+			counts := checkBookForKeywords(book, cfg.keywords)
+			for keyword, count := range counts {
+				err = cfg.db.saveCount(keyword, book.Title, count)
 				if err != nil {
 					log.Printf("Error saving count for %v: %v", book.Title, err)
 				}
@@ -79,34 +73,37 @@ func fetchBooks(nextURL string) ([]Book, string, error) {
 	return result.Results, result.Next, nil
 }
 
-func checkBookForKeywords(book Book, keywords []string) int {
+func checkBookForKeywords(book Book, keywords []string) map[string]int {
 	log.Println("Checking book", book.Title)
 	textUrl, ok := book.Formats["text/plain"]
 	if !ok {
-		return 0
+		return nil
 	}
 
 	resp, err := http.Get(textUrl)
 	if err != nil {
 		log.Println("Error fetching book text:", err)
-		return 0
+		return nil
 	}
 	defer resp.Body.Close()
 
 	text, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("Error reading book text:", err)
-		return 0
+		return nil
 	}
 
-	count := 0
+	counts := make(map[string]int)
 	lines := strings.Split(string(text), "\n")
 	for _, line := range lines {
 		for _, keyword := range keywords {
 			if strings.Contains(strings.ToLower(line), strings.ToLower(keyword)) {
-				count++
+				if _, ok := counts[keyword]; !ok {
+					counts[keyword] = 0
+				}
+				counts[keyword]++
 			}
 		}
 	}
-	return count
+	return counts
 }

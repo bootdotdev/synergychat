@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 
@@ -47,7 +48,7 @@ func main() {
 	if crawlerDBPath == "" {
 		apiCfg.db = &Memory{
 			mu:      &sync.Mutex{},
-			matches: map[string]Match{},
+			matches: map[string]map[string]Match{},
 		}
 	} else {
 		err := os.MkdirAll(crawlerDBPath, 0755)
@@ -63,23 +64,31 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Get("/healthz", handlerReadiness)
-	router.Get("/counts", apiCfg.handlerGetMatches)
+	router.Get("/counts", apiCfg.handlerGetAllMatches)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
 		Handler: router,
 	}
 
-	log.Printf("Serving on port: %s\n", port)
+	log.Printf("Serving on: http://localhost:%s\n", port)
 	log.Fatal(srv.ListenAndServe())
 }
 
-func (cfg apiConfig) handlerGetMatches(w http.ResponseWriter, r *http.Request) {
-	matchesSlice, err := cfg.db.getCounts()
+func (cfg apiConfig) handlerGetAllMatches(w http.ResponseWriter, r *http.Request) {
+	matches, err := cfg.db.getCounts()
 	if err != nil {
 		respondWithJSON(w, 500, map[string]string{"error": err.Error()})
 		return
 	}
+
+	matches = filterKeywords(r.URL.Query().Get("keywords"), matches)
+	matches = filterTitles(r.URL.Query().Get("title"), matches)
+
+	matchesSlice := matchesMapToSlice(matches)
+	slices.SortFunc(matchesSlice, func(a, b Match) int {
+		return a.Count - b.Count
+	})
 
 	respondWithJSON(w, 200, matchesSlice)
 }
