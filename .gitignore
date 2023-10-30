@@ -2,3 +2,4 @@ bin/
 cmd/api/api
 cmd/web/web
 cmd/crawler/crawler
+crawler-db/

@@ -43,7 +43,7 @@ func main() {
 	}
 
 	// optional
-	// "~/.crawler"
+	// e.g. "./crawler-db"
 	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
 	if crawlerDBPath == "" {
 		apiCfg.db = &Memory{
