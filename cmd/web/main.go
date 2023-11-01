@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 //go:embed public/*
@@ -52,11 +55,22 @@ func main() {
 	}
 
 	apiURL = os.Getenv("API_URL")
-	if port == "" {
-		log.Fatal("No API_URL found in environment")
-	}
 
-	http.HandleFunc("/", handler)
-	fmt.Println("Serving static SynergyChat front-end on :" + port)
-	http.ListenAndServe(":"+port, nil)
+	router := chi.NewRouter()
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+	router.HandleFunc("/", handler)
+
+	srv := &http.Server{
+		Addr:    ":" + port,
+		Handler: router,
+	}
+	log.Printf("Serving on: http://localhost:%s\n", port)
+	log.Fatal(srv.ListenAndServe())
 }
