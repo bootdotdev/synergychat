@@ -7,7 +7,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"sync"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -20,9 +19,9 @@ type apiConfig struct {
 
 func main() {
 	// "https://gutendex.com/books"
-	baseURL := os.Getenv("CRAWLER_BASE_URL")
+	baseURL := os.Getenv("TO_CRAWL_URL")
 	if baseURL == "" {
-		log.Fatal("No CRAWLER_BASE_URL found in environment")
+		log.Fatal("No TO_CRAWL_URL found in environment")
 	}
 	// "love,hate"
 	keywordsString := os.Getenv("CRAWLER_KEYWORDS")
@@ -46,25 +45,23 @@ func main() {
 	// e.g. "./crawler-db"
 	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
 	if crawlerDBPath == "" {
-		apiCfg.db = &Memory{
-			mu:      &sync.Mutex{},
-			matches: map[string]map[string]Match{},
-		}
+		var mem *Memory
+		apiCfg.db = mem
 	} else {
-		err := os.MkdirAll(crawlerDBPath, 0755)
-		if err != nil {
-			log.Fatal("Couldn't create directory in CRAWLER_DB_PATH")
-		}
-		apiCfg.db = Disk{
+		apiCfg.db = &Disk{
 			crawlerDBPath: crawlerDBPath,
 		}
 	}
 
+	err := apiCfg.db.init()
+	if err != nil {
+		log.Fatal("Couldn't initialize database: ", err)
+	}
 	go apiCfg.worker()
 
 	router := chi.NewRouter()
 	router.Get("/healthz", handlerReadiness)
-	router.Get("/counts", apiCfg.handlerGetAllMatches)
+	router.Get("/stats", apiCfg.handlerGetAllMatches)
 
 	srv := &http.Server{
 		Addr:    ":" + port,
@@ -82,8 +79,12 @@ func (cfg apiConfig) handlerGetAllMatches(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	matches = filterKeywords(r.URL.Query().Get("keywords"), matches)
-	matches = filterTitles(r.URL.Query().Get("title"), matches)
+	if r.URL.Query().Get("keywords") != "" {
+		matches = filterKeywords(r.URL.Query().Get("keywords"), matches)
+	}
+	if r.URL.Query().Get("title") != "" {
+		matches = filterTitles(r.URL.Query().Get("title"), matches)
+	}
 
 	matchesSlice := matchesMapToSlice(matches)
 	slices.SortFunc(matchesSlice, func(a, b Match) int {

@@ -19,13 +19,14 @@ type DB interface {
 	// keyword -> title -> count
 	getCounts() (map[string]map[string]Match, error)
 	saveCount(title, keyword string, count int) error
+	init() error
 }
 
 type Disk struct {
 	crawlerDBPath string
 }
 
-func (d Disk) getCounts() (map[string]map[string]Match, error) {
+func (d *Disk) getCounts() (map[string]map[string]Match, error) {
 	entries, err := os.ReadDir(d.crawlerDBPath)
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (d Disk) getCounts() (map[string]map[string]Match, error) {
 	return matches, nil
 }
 
-func (d Disk) saveCount(keyword, title string, count int) error {
+func (d *Disk) saveCount(keyword, title string, count int) error {
 	cleanedTitle := title
 	cleanedTitle = strings.ToLower(title)
 	cleanedTitle = removeSpaces(cleanedTitle)
@@ -64,6 +65,11 @@ func (d Disk) saveCount(keyword, title string, count int) error {
 		return err
 	}
 	return os.WriteFile(filepath.Join(d.crawlerDBPath, keyword+"."+cleanedTitle+".json"), dat, 0755)
+}
+
+func (d *Disk) init() error {
+	err := os.MkdirAll(d.crawlerDBPath, 0755)
+	return err
 }
 
 func removePunctuation(s string) string {
@@ -113,6 +119,17 @@ func (m *Memory) saveCount(keyword, title string, count int) error {
 		m.matches[keyword] = map[string]Match{}
 	}
 	m.matches[keyword][cleanedTitle] = match
+	return nil
+}
+
+func (m *Memory) init() error {
+	if m != nil {
+		return nil
+	}
+	m = &Memory{
+		mu:      &sync.Mutex{},
+		matches: map[string]map[string]Match{},
+	}
 	return nil
 }
 
