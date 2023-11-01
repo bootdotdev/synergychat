@@ -3,13 +3,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const messageInput = document.getElementById('message');
     const usernameInput = document.getElementById('username');
 
+    function showError(error) {
+        console.error(error);
+        alert("Sorry, something went wrong. The API Service is not responding.");
+    }
+
     function fetchMessages() {
         fetch(`${apiUrl}/messages`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
             .then(data => {
                 messagesDiv.innerHTML = data.map(msg => `<div><strong>${msg.AuthorUsername}</strong>: ${msg.Text}</div>`).join('');
             })
-            .catch(console.error);
+            .catch(
+                () => {
+                    // do nothing on the poller
+                }
+            );
     }
 
     document.getElementById('send').addEventListener('click', () => {
@@ -28,12 +42,17 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify({ AuthorUsername: username, Text: message })
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
             .then(() => {
                 messageInput.value = '';
                 fetchMessages();
             })
-            .catch(console.error);
+            .catch(showError);
     });
 
     // Fetch messages initially and set an interval for refreshing
