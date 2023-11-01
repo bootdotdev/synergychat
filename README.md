@@ -6,7 +6,18 @@ SynergyChat is not only the best workforce chatting tool, but the best analytics
 * "api" - The web API. This micro-service is exposed as our public API, and powers the data for the web frontend.
 * "crawler" - The analytics crawler. This micro-service scrapes a public repository of books for various keywords and stores them in a database. It is not exposed as a public API, but the "api" micro-service can access its data through internal-to-k8s HTTP requests.
 
-## API
+## Web Service
+
+This is a simple Go server that serves static HTML, CSS and JavaScript files intended to be loaded in a web browser.
+
+### Environment Variables
+
+| Name     | Description                                                                                                          | Required | Example                 |
+| -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------- |
+| WEB_PORT | The port the server will listen on                                                                                   | True     | 8080                    |
+| API_URL  | The base URL of the API service. If not provided, the page will still load in the browser, but won't be interactive. | False    | `http://localhost:8081` |
+
+## API Service
 
 ### Environment Variables
 
@@ -64,7 +75,7 @@ An array of previously created messages is returned in the response body:
 ]
 ```
 
-## Crawler
+## Crawler Service
 
 ### Environment Variables
 

@@ -81,18 +81,18 @@ func (cfg apiConfig) handlerCreateMessage(w http.ResponseWriter, r *http.Request
 		log.Fatal("Profanity detected!!!")
 	}
 
-	err = cfg.handleSlashCommand(reqBody.Text)
-	if err != nil {
-		respondWithJSON(w, 400, map[string]string{
-			"error": fmt.Sprintf("Error handling slash command: %s", err),
-		})
-		return
-	}
-
 	err = cfg.db.createMessage(reqBody.AuthorUsername, reqBody.Text)
 	if err != nil {
 		respondWithJSON(w, 400, map[string]string{
 			"error": fmt.Sprintf("Error creating message: %s", err),
+		})
+		return
+	}
+
+	err = cfg.handleSlashCommand(reqBody.Text)
+	if err != nil {
+		respondWithJSON(w, 400, map[string]string{
+			"error": fmt.Sprintf("Error handling slash command: %s", err),
 		})
 		return
 	}

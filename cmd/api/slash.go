@@ -21,7 +21,7 @@ func (cfg apiConfig) handleSlashCommand(msg string) error {
 		return nil
 	}
 	if cfg.crawlerURL == "" {
-		err := cfg.db.createMessage(crawlerBotAuthorUsername, "Crawler worker not confugured")
+		err := cfg.db.createMessage(crawlerBotAuthorUsername, "Crawler worker not configured")
 		if err != nil {
 			return err
 		}
@@ -63,7 +63,7 @@ func (cfg apiConfig) handleSlashCommand(msg string) error {
 	}
 
 	err = cfg.db.createMessage(crawlerBotAuthorUsername,
-		fmt.Sprintf("The crawler has found %d matches so far in books on the web for query: %s", total, reqURL.String()),
+		fmt.Sprintf("Beep boop! I have found %d matches so far in books matching your request. Your raw query to me was: %s", total, reqURL.String()),
 	)
 	if err != nil {
 		return err
