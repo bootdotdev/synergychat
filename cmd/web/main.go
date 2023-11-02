@@ -48,10 +48,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// 5007
 	port := os.Getenv("WEB_PORT")
 	if port == "" {
-		log.Fatal("No WEB_PORT found in environment")
+		log.Println("No WEB_PORT found in environment, using default 8080")
+		port = "8080"
 	}
 
 	apiURL = os.Getenv("API_URL")
