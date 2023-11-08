@@ -2,11 +2,14 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -18,11 +21,15 @@ type apiConfig struct {
 }
 
 func main() {
-	// "https://gutendex.com/books"
-	baseURL := os.Getenv("TO_CRAWL_URL")
-	if baseURL == "" {
-		log.Fatal("No TO_CRAWL_URL found in environment")
+	pageNum := os.Getenv("TO_CRAWL_PAGE_NUM")
+	if pageNum == "" {
+		log.Fatal("No TO_CRAWL_PAGE_NUM found in environment")
 	}
+	pageNumInt, err := strconv.Atoi(pageNum)
+	if err != nil {
+		log.Fatal("TO_CRAWL_PAGE_NUM must be an integer")
+	}
+
 	// "love,hate"
 	keywordsString := os.Getenv("CRAWLER_KEYWORDS")
 	if keywordsString == "" {
@@ -38,24 +45,27 @@ func main() {
 
 	apiCfg := apiConfig{
 		keywords: keywords,
-		baseURL:  baseURL,
+		baseURL:  fmt.Sprintf(baseURLFormat, pageNumInt),
 	}
 
 	// optional
 	// e.g. "./crawler-db"
 	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
 	if crawlerDBPath == "" {
-		var mem *Memory
+		mem := &Memory{
+			mu:      &sync.Mutex{},
+			matches: map[string]map[string]Match{},
+		}
 		apiCfg.db = mem
 	} else {
-		apiCfg.db = &Disk{
+		d := &Disk{
 			crawlerDBPath: crawlerDBPath,
 		}
-	}
-
-	err := apiCfg.db.init()
-	if err != nil {
-		log.Fatal("Couldn't initialize database: ", err)
+		err = d.init()
+		if err != nil {
+			log.Fatal("Couldn't initialize database: ", err)
+		}
+		apiCfg.db = d
 	}
 	go apiCfg.worker()
 

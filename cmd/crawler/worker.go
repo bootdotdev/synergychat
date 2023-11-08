@@ -22,7 +22,8 @@ type Book struct {
 	DownloadCount int               `json:"download_count"`
 }
 
-const timeBetweenBooks = time.Second
+const timeBetweenBooks = time.Second * 30
+const baseURLFormat = "http://gutendex.com/books/?page=%d"
 
 func (cfg apiConfig) worker() {
 	nextURL := cfg.baseURL

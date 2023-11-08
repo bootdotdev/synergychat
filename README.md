@@ -79,12 +79,12 @@ An array of previously created messages is returned in the response body:
 
 ### Environment Variables
 
-| Name             | Description                                                                                                    | Required | Example                           |
-| ---------------- | -------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------- |
-| CRAWLER_PORT     | The port the server will listen on                                                                             | True     | 8081                              |
-| TO_CRAWL_URL     | The base URL of the website to crawl                                                                           | True     | https://www.gutenberg.org/books   |
-| CRAWLER_KEYWORDS | The keywords to search for. Only included keywords will be counted                                             | True     | love,hate                         |
-| CRAWLER_DB_PATH  | The directory path where the database files be created and stored.  If omitted, ephemeral memory will be used. | False    | `/var/lib/synergychat/crawler/db` |
+| Name              | Description                                                                                                    | Required | Example                           |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------- |
+| CRAWLER_PORT      | The port the server will listen on                                                                             | True     | 8081                              |
+| TO_CRAWL_PAGE_NUM | The page in the index of books that the crawler should start crawling from                                     | True     | 1                                 |
+| CRAWLER_KEYWORDS  | The keywords to search for. Only included keywords will be counted                                             | True     | love,hate                         |
+| CRAWLER_DB_PATH   | The directory path where the database files be created and stored.  If omitted, ephemeral memory will be used. | False    | `/var/lib/synergychat/crawler/db` |
 
 ### HTTP Endpoints
 

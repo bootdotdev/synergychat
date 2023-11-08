@@ -19,7 +19,6 @@ type DB interface {
 	// keyword -> title -> count
 	getCounts() (map[string]map[string]Match, error)
 	saveCount(title, keyword string, count int) error
-	init() error
 }
 
 type Disk struct {
@@ -119,17 +118,6 @@ func (m *Memory) saveCount(keyword, title string, count int) error {
 		m.matches[keyword] = map[string]Match{}
 	}
 	m.matches[keyword][cleanedTitle] = match
-	return nil
-}
-
-func (m *Memory) init() error {
-	if m != nil {
-		return nil
-	}
-	m = &Memory{
-		mu:      &sync.Mutex{},
-		matches: map[string]map[string]Match{},
-	}
 	return nil
 }
 
