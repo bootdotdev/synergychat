@@ -2,12 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"slices"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -16,20 +14,10 @@ import (
 
 type apiConfig struct {
 	keywords []string
-	baseURL  string
 	db       DB
 }
 
 func main() {
-	pageNum := os.Getenv("TO_CRAWL_PAGE_NUM")
-	if pageNum == "" {
-		log.Fatal("No TO_CRAWL_PAGE_NUM found in environment")
-	}
-	pageNumInt, err := strconv.Atoi(pageNum)
-	if err != nil {
-		log.Fatal("TO_CRAWL_PAGE_NUM must be an integer")
-	}
-
 	// "love,hate"
 	keywordsString := os.Getenv("CRAWLER_KEYWORDS")
 	if keywordsString == "" {
@@ -45,7 +33,6 @@ func main() {
 
 	apiCfg := apiConfig{
 		keywords: keywords,
-		baseURL:  fmt.Sprintf(baseURLFormat, pageNumInt),
 	}
 
 	// optional
@@ -61,7 +48,7 @@ func main() {
 		d := &Disk{
 			crawlerDBPath: crawlerDBPath,
 		}
-		err = d.init()
+		err := d.init()
 		if err != nil {
 			log.Fatal("Couldn't initialize database: ", err)
 		}

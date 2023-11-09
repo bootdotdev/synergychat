@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
@@ -24,9 +26,11 @@ type Book struct {
 
 const timeBetweenBooks = time.Second * 30
 const baseURLFormat = "http://gutendex.com/books/?page=%d"
+const maxPage = 1200
 
 func (cfg apiConfig) worker() {
-	nextURL := cfg.baseURL
+	pageNum := rand.Intn(maxPage-1) + 1
+	nextURL := fmt.Sprintf(baseURLFormat, pageNum)
 	for nextURL != "" {
 		books, next, err := fetchBooks(nextURL)
 		if err != nil {
