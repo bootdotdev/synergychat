@@ -21,6 +21,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if path == "/" {
 		path = "/index.html"
 	}
+	fmt.Println("Serving", path)
 	data, err := content.ReadFile("public" + path)
 	if err != nil {
 		http.Error(w, "File not found", 404)
@@ -65,7 +66,7 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
-	router.HandleFunc("/", handler)
+	router.Handle("/*", http.HandlerFunc(handler))
 
 	srv := &http.Server{
 		Addr:    ":" + port,
