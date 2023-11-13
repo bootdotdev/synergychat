@@ -14,7 +14,7 @@ This is a simple Go server that serves static HTML, CSS and JavaScript files int
 
 | Name     | Description                                                                                                          | Required | Example                 |
 | -------- | -------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------- |
-| WEB_PORT | The port the server will listen on                                                                                   | True     | 8080                    |
+| WEB_PORT | The port the server will listen on                                                                                   | False    | 8080                    |
 | API_URL  | The base URL of the API service. If not provided, the page will still load in the browser, but won't be interactive. | False    | `http://localhost:8081` |
 
 ## API Service
