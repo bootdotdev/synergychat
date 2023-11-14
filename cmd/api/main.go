@@ -29,8 +29,10 @@ func main() {
 	}
 	apiDBFilePath := os.Getenv("API_DB_FILEPATH")
 	if apiDBFilePath == "" {
+		log.Println("No API_DB_FILEPATH found in environment, using in-memory database")
 		apiCfg.db = &Memory{}
 	} else {
+		log.Println("API_DB_FILEPATH found! Using filesystem database")
 		apiCfg.db = &Disk{
 			apiDBFilePath: apiDBFilePath,
 		}

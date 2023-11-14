@@ -39,12 +39,14 @@ func main() {
 	// e.g. "./crawler-db"
 	crawlerDBPath := os.Getenv("CRAWLER_DB_PATH")
 	if crawlerDBPath == "" {
+		log.Println("No CRAWLER_DB_PATH found in environment, using in-memory database")
 		mem := &Memory{
 			mu:      &sync.Mutex{},
 			matches: map[string]map[string]Match{},
 		}
 		apiCfg.db = mem
 	} else {
+		log.Println("CRAWLER_DB_PATH found! Using filesystem database")
 		d := &Disk{
 			crawlerDBPath: crawlerDBPath,
 		}
