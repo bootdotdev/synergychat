@@ -119,3 +119,17 @@ Returns an array of JSON objects containing the counts of the keywords in the da
   }
 ]
 ```
+
+## TestRAM
+
+A simple application that allocates an arbitrary amount of memory and holds onto it indefinitely. This is useful for testing the Kubernetes Horizontal Pod Autoscaler.
+
+### Environment Variables
+
+| Name      | Description                                           | Required | Example |
+| --------- | ----------------------------------------------------- | -------- | ------- |
+| MEGABYTES | The number of megabytes the application will allocate | True     | 1000    |
+
+## TestCPU
+
+A simple application that uses as much CPU as possible. This is useful for testing the Kubernetes Horizontal Pod Autoscaler.

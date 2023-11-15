@@ -2,5 +2,7 @@ bin/
 cmd/api/api
 cmd/web/web
 cmd/crawler/crawler
+cmd/testram/testram
+cmd/testcpu/testcpu
 crawler-db/
 db.json
