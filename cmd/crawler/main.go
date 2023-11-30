@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 )
 
 type apiConfig struct {
@@ -59,6 +60,14 @@ func main() {
 	go apiCfg.worker()
 
 	router := chi.NewRouter()
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 	router.Get("/healthz", handlerReadiness)
 	router.Get("/stats", apiCfg.handlerGetAllMatches)
 
