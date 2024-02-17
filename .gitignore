@@ -2,7 +2,9 @@ bin/
 cmd/api/api
 cmd/web/web
 cmd/crawler/crawler
-cmd/testram/testram
 cmd/testcpu/testcpu
-crawler-db/
+cmd/testram/testram
 db.json
+crawler-db/
+*-linux-arm64
+*-linux-amd64

@@ -1,5 +1,7 @@
-FROM --platform=linux/amd64 scratch
+FROM --platform=$TARGETPLATFORM debian:stable-slim
 
-ADD testcpu /bin/testcpu
+ARG TARGETOS
+ARG TARGETARCH
+ADD testcpu-${TARGETOS}-${TARGETARCH} /bin/testcpu
 
 CMD ["/bin/testcpu"]
