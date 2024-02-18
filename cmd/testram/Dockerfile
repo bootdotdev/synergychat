@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM debian:stable-slim
+FROM --platform=$TARGETPLATFORM scratch
 
 ARG TARGETOS
 ARG TARGETARCH
