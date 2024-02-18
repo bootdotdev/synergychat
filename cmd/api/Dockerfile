@@ -1,8 +1,10 @@
-FROM --platform=linux/amd64 debian:stable-slim
+FROM --platform=$TARGETPLATFORM debian:stable-slim
 
 RUN apt-get update && apt-get install -y ca-certificates
 RUN apt-get upgrade -y
 
-ADD api /bin/api
+ARG TARGETOS
+ARG TARGETARCH
+ADD api-${TARGETOS}-${TARGETARCH} /bin/api
 
 CMD ["/bin/api"]

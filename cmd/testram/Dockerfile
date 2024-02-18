@@ -1,5 +1,7 @@
-FROM --platform=linux/amd64 scratch
+FROM --platform=$TARGETPLATFORM scratch
 
-ADD testram /bin/testram
+ARG TARGETOS
+ARG TARGETARCH
+ADD testram-${TARGETOS}-${TARGETARCH} /bin/testram
 
 CMD ["/bin/testram"]
