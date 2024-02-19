@@ -22,15 +22,15 @@ build:
 	go build -o ./cmd/testram/testram ./cmd/testram
 
 builddocker:
-	docker buildx build --platform=linux/amd64,linux/arm64 -t lanecwagner/synergychat-web ./cmd/web
-	docker buildx build --platform=linux/amd64,linux/arm64 -t lanecwagner/synergychat-api ./cmd/api
-	docker buildx build --platform=linux/amd64,linux/arm64 -t lanecwagner/synergychat-crawler ./cmd/crawler
-	docker buildx build --platform=linux/amd64,linux/arm64 -t lanecwagner/synergychat-testram ./cmd/testram
-	docker buildx build --platform=linux/amd64,linux/arm64 -t lanecwagner/synergychat-testcpu ./cmd/testcpu
+	docker buildx build --platform=linux/amd64,linux/arm64 -t bootdotdev/synergychat-web ./cmd/web
+	docker buildx build --platform=linux/amd64,linux/arm64 -t bootdotdev/synergychat-api ./cmd/api
+	docker buildx build --platform=linux/amd64,linux/arm64 -t bootdotdev/synergychat-crawler ./cmd/crawler
+	docker buildx build --platform=linux/amd64,linux/arm64 -t bootdotdev/synergychat-testram ./cmd/testram
+	docker buildx build --platform=linux/amd64,linux/arm64 -t bootdotdev/synergychat-testcpu ./cmd/testcpu
 
 pushdocker:
-	docker push lanecwagner/synergychat-web
-	docker push lanecwagner/synergychat-api
-	docker push lanecwagner/synergychat-crawler
-	docker push lanecwagner/synergychat-testram
-	docker push lanecwagner/synergychat-testcpu
+	docker push bootdotdev/synergychat-web
+	docker push bootdotdev/synergychat-api
+	docker push bootdotdev/synergychat-crawler
+	docker push bootdotdev/synergychat-testram
+	docker push bootdotdev/synergychat-testcpu
