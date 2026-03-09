@@ -80,7 +80,7 @@ func fetchBooks(nextURL string) ([]Book, string, error) {
 
 func checkBookForKeywords(book Book, keywords []string) map[string]int {
 	log.Println("Checking book", book.Title)
-	textUrl, ok := book.Formats["text/plain"]
+	textUrl, ok := book.Formats["text/plain; charset=utf-8"]
 	if !ok {
 		return nil
 	}
