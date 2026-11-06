@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
@@ -73,11 +74,17 @@ func (d *Disk) init() error {
 			return err
 		}
 	}
-	_, err := os.Stat(d.apiDBFilePath)
+	info, err := os.Stat(d.apiDBFilePath)
 	if err != nil && os.IsNotExist(err) {
 		return os.WriteFile(d.apiDBFilePath, []byte("[]"), 0644)
 	}
-	return err
+	if err != nil {
+		return err
+	}
+	if info.IsDir() {
+		return fmt.Errorf("database path %q is a directory; expected a file", d.apiDBFilePath)
+	}
+	return nil
 }
 
 type Memory struct {
