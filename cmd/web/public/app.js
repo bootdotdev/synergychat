@@ -18,7 +18,10 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         messagesDiv.innerHTML = data
-          .map((msg) => `<div><strong>${msg.AuthorUsername}</strong>: ${msg.Text}</div>`)
+          .map(
+            (msg) =>
+              `<div><strong>${msg.AuthorUsername}</strong>: ${msg.Text}</div>`,
+          )
           .join("");
       })
       .catch(() => {
