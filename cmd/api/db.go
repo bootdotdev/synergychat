@@ -56,7 +56,7 @@ func (d *Disk) createMessage(authorUsername, text string) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(d.apiDBFilePath, dat, 0644)
+	err = os.WriteFile(d.apiDBFilePath, dat, 0o644)
 	if err != nil {
 		return err
 	}
@@ -69,14 +69,14 @@ func (d *Disk) init() error {
 	// not including the file itself
 	dir, _ := filepath.Split(d.apiDBFilePath)
 	if dir != "" {
-		err := os.MkdirAll(dir, 0755)
+		err := os.MkdirAll(dir, 0o755)
 		if err != nil {
 			return err
 		}
 	}
 	info, err := os.Stat(d.apiDBFilePath)
 	if err != nil && os.IsNotExist(err) {
-		return os.WriteFile(d.apiDBFilePath, []byte("[]"), 0644)
+		return os.WriteFile(d.apiDBFilePath, []byte("[]"), 0o644)
 	}
 	if err != nil {
 		return err

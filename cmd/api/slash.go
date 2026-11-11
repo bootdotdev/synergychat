@@ -35,12 +35,10 @@ func (cfg apiConfig) handleSlashCommand(msg string) error {
 	query := reqURL.Query()
 	parts := strings.Split(msg, " ")
 	for _, part := range parts {
-		if strings.HasPrefix(part, "keywords=") {
-			keywordsQueryVal := strings.TrimPrefix(part, "keywords=")
+		if keywordsQueryVal, ok := strings.CutPrefix(part, "keywords="); ok {
 			query.Set("keywords", keywordsQueryVal)
 		}
-		if strings.HasPrefix(part, "title=") {
-			titleQueryVal := strings.TrimPrefix(part, "title=")
+		if titleQueryVal, ok := strings.CutPrefix(part, "title="); ok {
 			query.Set("title", titleQueryVal)
 		}
 	}

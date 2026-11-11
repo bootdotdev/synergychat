@@ -63,11 +63,11 @@ func (d *Disk) saveCount(keyword, title string, count int) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(d.crawlerDBPath, keyword+"."+cleanedTitle+".json"), dat, 0755)
+	return os.WriteFile(filepath.Join(d.crawlerDBPath, keyword+"."+cleanedTitle+".json"), dat, 0o755)
 }
 
 func (d *Disk) init() error {
-	err := os.MkdirAll(d.crawlerDBPath, 0755)
+	err := os.MkdirAll(d.crawlerDBPath, 0o755)
 	return err
 }
 
