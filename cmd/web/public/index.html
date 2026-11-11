@@ -1,42 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SynergyChat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="app.js"></script>
-</head>
+  </head>
 
-<body class="bg-gray-900 text-white">
+  <body class="bg-gray-900 text-white">
     <div class="container mx-auto flex min-h-screen flex-col p-4">
-        <h1 class="text-2xl font-bold mb-4">SynergyChat</h1>
-        <p class="mb-4 text-gray-400 italic ">
-            Add a username and start chatting! Access synergy-unlocking data-driven numbers
-            using the /stats command.
-        </p>
-        <ul class="list-disc mb-4 text-gray-400 italic list-inside text-sm">
-            <li><b>/stats</b>: Returns a summary of all keywords crawled in all books.</li>
-            <li><b>/stats keywords=love</b>: Returns a summary of the keyword "love" in all books.</li>
-            <li><b>/stats keywords=love,hate</b>: Returns a summary of the keywords "love" and "hate" in all books.</li>
-            <li><b>/stats title=Frankenstein</b>: Returns a summary of all keywords in the book "Frankenstein".</li>
-            <li><b>/stats keywords=love,hate title=Frankenstein</b>: Returns a summary of the keywords "love" and "hate"
-                in
-                the book "Frankenstein".</li>
-        </ul>
-        <div class="mb-4">
-            <input type="text" id="username" placeholder="Username"
-                class="px-2 py-1 rounded bg-gray-800 border border-gray-600">
-        </div>
-        <div class="mb-4">
-            <textarea id="message" placeholder="Write a message..."
-                class="w-full px-2 py-1 rounded bg-gray-800 border border-gray-600"></textarea>
-        </div>
-        <button id="send" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700">Send</button>
-        <div id="messages" class="mt-6 bg-gray-800 rounded p-4 h-96 overflow-y-auto"></div>
-        <footer class="mt-auto pb-4 pt-4 text-center text-xs text-gray-500">Made in a <a href="https://www.boot.dev" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gray-300">Boot.dev</a> course</footer>
+      <h1 class="text-2xl font-bold mb-4">SynergyChat</h1>
+      <p class="mb-4 text-gray-400 italic">
+        Add a username and start chatting! Access synergy-unlocking data-driven numbers using the
+        /stats command.
+      </p>
+      <ul class="list-disc mb-4 text-gray-400 italic list-inside text-sm">
+        <li><b>/stats</b>: Returns a summary of all keywords crawled in all books.</li>
+        <li><b>/stats keywords=love</b>: Returns a summary of the keyword "love" in all books.</li>
+        <li>
+          <b>/stats keywords=love,hate</b>: Returns a summary of the keywords "love" and "hate" in
+          all books.
+        </li>
+        <li>
+          <b>/stats title=Frankenstein</b>: Returns a summary of all keywords in the book
+          "Frankenstein".
+        </li>
+        <li>
+          <b>/stats keywords=love,hate title=Frankenstein</b>: Returns a summary of the keywords
+          "love" and "hate" in the book "Frankenstein".
+        </li>
+      </ul>
+      <div class="mb-4">
+        <input
+          type="text"
+          id="username"
+          placeholder="Username"
+          class="px-2 py-1 rounded bg-gray-800 border border-gray-600"
+        />
+      </div>
+      <div class="mb-4">
+        <textarea
+          id="message"
+          placeholder="Write a message..."
+          class="w-full px-2 py-1 rounded bg-gray-800 border border-gray-600"
+        ></textarea>
+      </div>
+      <button id="send" class="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700">Send</button>
+      <div id="messages" class="mt-6 bg-gray-800 rounded p-4 h-96 overflow-y-auto"></div>
+      <footer class="mt-auto pb-4 pt-4 text-center text-xs text-gray-500">
+        Made in a
+        <a
+          href="https://www.boot.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-gray-400 hover:text-gray-300"
+          >Boot.dev</a
+        >
+        course
+      </footer>
     </div>
-</body>
-
+  </body>
 </html>

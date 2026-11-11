@@ -10,7 +10,6 @@ func main() {
 			i := 0
 			for {
 				i++
-				useCPU(i)
 				if i > 100000000 {
 					i = 0
 				}
@@ -19,8 +18,4 @@ func main() {
 	}
 	forever := make(chan struct{})
 	<-forever
-}
-
-func useCPU(i int) int {
-	return i * i
 }

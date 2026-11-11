@@ -24,9 +24,11 @@ type Book struct {
 	DownloadCount int               `json:"download_count"`
 }
 
-const timeBetweenBooks = time.Second * 30
-const baseURLFormat = "http://gutendex.com/books/?page=%d"
-const maxPage = 1200
+const (
+	timeBetweenBooks = time.Second * 30
+	baseURLFormat    = "http://gutendex.com/books/?page=%d"
+	maxPage          = 1200
+)
 
 func (cfg apiConfig) worker() {
 	pageNum := rand.Intn(maxPage-1) + 1
